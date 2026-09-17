@@ -1,0 +1,29 @@
+[project]
+name = "parole"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "skueee", email = "skueee@outlook.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+parole = "parole:main"
+
+[tool.uvs.scripts]
+format = "uv run ruff format"
+lint = "uv run ruff check"
+fix = "uv run ruff check --fix"
+checks = ["fix", "format", "lint"]
+
+[build-system]
+requires = ["uv_build>=0.12.15,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.8",
+    "uv-script>=0.1.9",
+]

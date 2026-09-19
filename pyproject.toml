@@ -7,7 +7,9 @@ authors = [
     { name = "skueee", email = "skueee@outlook.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "textual>=8.2.8",
+]
 
 [project.scripts]
 parole = "parole:main"

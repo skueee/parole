@@ -1,10 +1,9 @@
-import asyncio
+import argparse
+import bisect
 import subprocess
 from array import array
 
 import lrclib
-import bisect
-from textual import work
 from textual.app import App, ComposeResult
 from textual.widgets import Label
 
@@ -75,14 +74,12 @@ async def check_if_new_song():
                     current_lyrics.append(i[11:])
             except TypeError:
                 current_lyrics = None
-            current_position = 0
             active = True
 
         else:
             current_timestamps = None
             trackid = None
             current_lyrics = None
-            current_position = 0
             active = False
 
 
@@ -106,26 +103,40 @@ def get_current_lyrics():
         return "No song is playing"
 
 
-class MyApp(App):
+async def get_thing_to_display():
+    await check_if_new_song()
+    return get_current_lyrics()
+
+
+class ParoleApp(App):
     CSS_PATH = "textual.tcss"
 
+    def __init__(self, delay_ms: float):
+        super().__init__()
+        self.delay_seconds = delay_ms / 1000.0
+
     def compose(self) -> ComposeResult:
-        yield Label("Loading lyrics...", id="loading-label")
+        yield Label("Loading...", id="main-label")
 
     def on_mount(self) -> ComposeResult:
-        self.init_lyrics()
+        self.set_interval(self.delay_seconds, self.update_label)
 
-    @work(exclusive=True)
-    async def init_lyrics(self):
-        global trackid
-        metadata = get_metadata
-        if metadata[0] == True:
-            trackid = f"{metadata[1]}__{metadata[2]}"
-        else:
-            trackid = None
+    async def update_label(self) -> None:
+        label = self.query_one("#main-label", Label)
+        label.update(await get_thing_to_display())
 
 
 if __name__ == "__main__":
-    print(asyncio.run(get_next_lyrics()))
-    app = MyApp()
+    parser = argparse.ArgumentParser(
+        description="Parole is a TUI tool to display lyrics from the song you are currently playing"
+    )
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=100,
+        help="Delay at which the program will update lyrics",
+    )
+
+    args = parser.parse_args()
+    app = ParoleApp(delay_ms=args.delay)
     app.run()

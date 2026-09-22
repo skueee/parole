@@ -63,7 +63,10 @@ async def get_next_lyrics():
             lyrics = await get_lyrics(metadata[2], metadata[1])
             current_lyrics = []
             for i in lyrics["lyrics"].splitlines():
-                current_lyrics.append({"timestamp": i[1:9], "lyric": i[11:]})
+                # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
+                seconds = int(i[1:3]) * 60 + int(i[4:6]) + int(i[7:9]) / 100
+                
+                current_lyrics.append({"position": seconds, "lyric": i[11:]})
             current_position = 0
             print(current_lyrics)
 

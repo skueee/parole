@@ -3,13 +3,15 @@ import subprocess
 from array import array
 
 import lrclib
+import bisect
 from textual import work
 from textual.app import App, ComposeResult
 from textual.widgets import Label
 
-current_lyrics: array | None
-current_position: int
+current_lyrics: array[str] | None
+current_timestamps: array[float] | None
 trackid: str | None = None
+active: bool
 
 
 async def get_lyrics(title, artist, album: str | None = None):
@@ -53,8 +55,8 @@ def get_metadata():
         return [run]
 
 
-async def get_next_lyrics():
-    global trackid
+async def check_if_new_song():
+    global trackid, active, current_lyrics, current_timestamps
     trackid = None if not isinstance(trackid, str) else trackid
     metadata = get_metadata()
     if trackid == None or trackid != f"{metadata[1]}__{metadata[2]}":
@@ -62,20 +64,46 @@ async def get_next_lyrics():
             trackid = f"{metadata[1]}__{metadata[2]}"
             lyrics = await get_lyrics(metadata[2], metadata[1])
             current_lyrics = []
-            for i in lyrics["lyrics"].splitlines():
-                # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
-                seconds = int(i[1:3]) * 60 + int(i[4:6]) + int(i[7:9]) / 100
-                
-                current_lyrics.append({"position": seconds, "lyric": i[11:]})
+            current_timestamps = []
+            try:
+                for i in lyrics["lyrics"].splitlines():
+                    # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
+                    seconds = int(i[1:3]) * 60 + int(i[4:6]) + int(i[7:9]) / 100
+
+                    current_timestamps.append(seconds)
+
+                    current_lyrics.append(i[11:])
+            except TypeError:
+                current_lyrics = None
             current_position = 0
-            print(current_lyrics)
+            active = True
 
         else:
+            current_timestamps = None
             trackid = None
-            refresh = 3
             current_lyrics = None
             current_position = 0
-            return [None, refresh]
+            active = False
+
+
+def get_current_lyrics():
+    if active:
+        if current_lyrics == None:
+            return "Can't find lyrics for this song"
+        pos = float(
+            subprocess.run(
+                ["playerctl", "position"],
+                capture_output=True,
+                text=True,
+                check=False,
+            ).stdout.strip()
+        )
+
+        index = bisect.bisect_right(current_timestamps, pos) - 1
+
+        return current_lyrics[index]
+    else:
+        return "No song is playing"
 
 
 class MyApp(App):

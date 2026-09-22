@@ -52,7 +52,7 @@ def get_metadata():
         ).stdout.strip()
         return [run, artist, title, album]
     else:
-        return [run]
+        return [run, None, None, None]
 
 
 async def check_if_new_song():

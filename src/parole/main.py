@@ -1,5 +1,6 @@
 import argparse
 import bisect
+import random
 import subprocess
 from array import array
 
@@ -9,6 +10,7 @@ from textual.widgets import Label
 
 current_lyrics: array[str] | None
 current_timestamps: array[float] | None
+current_infos: array | None
 trackid: str | None = None
 active: bool
 
@@ -55,7 +57,7 @@ def get_metadata():
 
 
 async def check_if_new_song():
-    global trackid, active, current_lyrics, current_timestamps
+    global trackid, active, current_lyrics, current_timestamps, current_infos
     trackid = None if not isinstance(trackid, str) else trackid
     metadata = get_metadata()
     if trackid == None or trackid != f"{metadata[1]}__{metadata[2]}":
@@ -68,22 +70,25 @@ async def check_if_new_song():
                 for i in lyrics["lyrics"].splitlines():
                     # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
                     seconds = int(i[1:3]) * 60 + int(i[4:6]) + int(i[7:9]) / 100
-
                     current_timestamps.append(seconds)
 
-                    current_lyrics.append(i[11:])
+                    # Check if the lyric is not empty and then append it
+                    lyric = i[10:].strip() or random.choice(["♫", "♪"])
+                    current_lyrics.append(lyric)
             except TypeError:
                 current_lyrics = None
             active = True
+            current_infos = [metadata[1], metadata[2]]
 
         else:
             current_timestamps = None
+            current_infos = None
             trackid = None
             current_lyrics = None
             active = False
 
 
-def get_current_lyrics():
+def get_current_lyrics(show_infos: bool):
     if active:
         if current_lyrics == None:
             return ["Can't find lyrics for this song"]
@@ -99,7 +104,11 @@ def get_current_lyrics():
         index = bisect.bisect_right(current_timestamps, pos) - 1
 
         prev_line = current_lyrics[index - 1] if index > 0 else ""
-        curr_line = current_lyrics[index] if 0 <= index < len(current_lyrics) else ""
+        curr_line = (
+            current_lyrics[index]
+            if 0 <= index < len(current_lyrics)
+            else (f"{current_infos[0]} - {current_infos[1]}" if show_infos else "")
+        )
         next_line = current_lyrics[index + 1] if index + 1 < len(current_lyrics) else ""
 
         return [prev_line, curr_line, next_line]
@@ -107,17 +116,18 @@ def get_current_lyrics():
         return ["No song is playing"]
 
 
-async def get_thing_to_display():
+async def get_thing_to_display(show_infos: bool):
     await check_if_new_song()
-    return get_current_lyrics()
+    return get_current_lyrics(show_infos)
 
 
 class ParoleApp(App):
     CSS_PATH = "textual.tcss"
 
-    def __init__(self, delay_ms: float):
+    def __init__(self, delay_ms: float, show_infos: bool):
         super().__init__()
         self.delay_seconds = delay_ms / 1000.0
+        self.show_infos = show_infos
 
     def compose(self) -> ComposeResult:
         yield Label(" ", id="before-label")
@@ -132,7 +142,7 @@ class ParoleApp(App):
         before_label = self.query_one("#before-label", Label)
         after_label = self.query_one("#after-label", Label)
 
-        lyrics = await get_thing_to_display()
+        lyrics = await get_thing_to_display(self.show_infos)
 
         if len(lyrics) == 1:
             main_label.update(lyrics[0])
@@ -157,7 +167,14 @@ if __name__ == "__main__":
         default=100,
         help="Delay at which the program will update lyrics",
     )
+    parser.add_argument(
+        "--no-song-infos",
+        dest="show_infos",
+        action="store_false",
+        default=True,
+        help="Don't show song infos at the start of the song",
+    )
 
     args = parser.parse_args()
-    app = ParoleApp(delay_ms=args.delay)
+    app = ParoleApp(delay_ms=args.delay, show_infos=args.show_infos)
     app.run()

@@ -1,3 +1,24 @@
 Screen {
     align: center middle;
 }
+
+#main-label {
+    text-style: bold;
+    text-align: center;
+    content-align: center middle;
+    width: 100%;
+}
+
+#before-label {
+    opacity: 50%;
+    text-align: center;
+    content-align: center middle;
+    width: 100%;
+}
+
+#after-label {
+    opacity: 50%;
+    text-align: center;
+    content-align: center middle;
+    width: 100%;
+}

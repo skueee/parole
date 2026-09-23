@@ -86,7 +86,7 @@ async def check_if_new_song():
 def get_current_lyrics():
     if active:
         if current_lyrics == None:
-            return "Can't find lyrics for this song"
+            return ["Can't find lyrics for this song"]
         pos = float(
             subprocess.run(
                 ["playerctl", "position"],
@@ -98,9 +98,13 @@ def get_current_lyrics():
 
         index = bisect.bisect_right(current_timestamps, pos) - 1
 
-        return current_lyrics[index]
+        prev_line = current_lyrics[index - 1] if index > 0 else ""
+        curr_line = current_lyrics[index] if 0 <= index < len(current_lyrics) else ""
+        next_line = current_lyrics[index + 1] if index + 1 < len(current_lyrics) else ""
+
+        return [prev_line, curr_line, next_line]
     else:
-        return "No song is playing"
+        return ["No song is playing"]
 
 
 async def get_thing_to_display():
@@ -116,14 +120,31 @@ class ParoleApp(App):
         self.delay_seconds = delay_ms / 1000.0
 
     def compose(self) -> ComposeResult:
+        yield Label(" ", id="before-label")
         yield Label("Loading...", id="main-label")
+        yield Label(" ", id="after-label")
 
     def on_mount(self) -> ComposeResult:
         self.set_interval(self.delay_seconds, self.update_label)
 
     async def update_label(self) -> None:
-        label = self.query_one("#main-label", Label)
-        label.update(await get_thing_to_display())
+        main_label = self.query_one("#main-label", Label)
+        before_label = self.query_one("#before-label", Label)
+        after_label = self.query_one("#after-label", Label)
+
+        lyrics = await get_thing_to_display()
+
+        if len(lyrics) == 1:
+            main_label.update(lyrics[0])
+            before_label.display = False
+            after_label.display = False
+        else:
+            before_label.display = True
+            after_label.display = True
+
+            before_label.update(lyrics[0])
+            main_label.update(lyrics[1])
+            after_label.update(lyrics[2])
 
 
 if __name__ == "__main__":

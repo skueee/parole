@@ -124,10 +124,11 @@ async def get_thing_to_display(show_infos: bool):
 class ParoleApp(App):
     CSS_PATH = "textual.tcss"
 
-    def __init__(self, delay_ms: float, show_infos: bool):
+    def __init__(self, delay_ms: float, show_infos: bool, ansi: bool):
         super().__init__()
         self.delay_seconds = delay_ms / 1000.0
         self.show_infos = show_infos
+        self.ansi_color = ansi
 
     def compose(self) -> ComposeResult:
         yield Label(" ", id="before-label")
@@ -174,7 +175,14 @@ if __name__ == "__main__":
         default=True,
         help="Don't show song infos at the start of the song",
     )
+    parser.add_argument(
+        "--no-ansi",
+        dest="ansi",
+        action="store_false",
+        default=True,
+        help="Don't use terminal colors",
+    )
 
     args = parser.parse_args()
-    app = ParoleApp(delay_ms=args.delay, show_infos=args.show_infos)
+    app = ParoleApp(delay_ms=args.delay, show_infos=args.show_infos, ansi=args.ansi)
     app.run()

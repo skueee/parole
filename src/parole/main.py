@@ -18,9 +18,7 @@ active: bool
 async def get_lyrics(title, artist, album: str | None = None):
     lyrics = await lrclib.get_lyrics(title=title, artist=artist, album=album)
     if "syncedLyrics" in lyrics:
-        return {"lyrics": lyrics["syncedLyrics"], "synced": True}
-    elif "plainLyrics" in lyrics:
-        return {"lyrics": lyrics["plainLyrics"], "synced": False}
+        return {"lyrics": lyrics["syncedLyrics"]}
     else:
         return None
 

@@ -1,9 +1,9 @@
 import argparse
 import bisect
 import random
+import re
 import subprocess
 from array import array
-import re
 
 import lrclib
 from textual.app import App, ComposeResult
@@ -76,7 +76,11 @@ async def check_if_new_song():
                         break
 
                     # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
-                    seconds = int(match.group(1)) * 60 + int(match.group(2)) + int(match.group(3) or 0) / 100
+                    seconds = (
+                        int(match.group(1)) * 60
+                        + int(match.group(2))
+                        + int(match.group(3) or 0) / 100
+                    )
                     current_timestamps.append(seconds)
 
                     # Check if the lyric is not empty and then append it
@@ -85,7 +89,7 @@ async def check_if_new_song():
                         lyric = random.choice(["♫", "♪"])
 
                     current_lyrics.append(lyric)
-            except (AttributeError, TypeError):
+            except AttributeError, TypeError:
                 current_lyrics = None
 
             active = True

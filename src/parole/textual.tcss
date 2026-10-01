@@ -9,14 +9,7 @@ Screen {
     width: 100%;
 }
 
-#before-label {
-    opacity: 50%;
-    text-align: center;
-    content-align: center middle;
-    width: 100%;
-}
-
-#after-label {
+.secundary-label {
     opacity: 50%;
     text-align: center;
     content-align: center middle;

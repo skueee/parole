@@ -103,7 +103,7 @@ async def check_if_new_song():
             active = False
 
 
-def get_current_lyrics(show_infos: bool):
+def get_current_lyrics(show_infos: bool, line_count: int):
     if active:
         if current_lyrics == None:
             return ["Can't find lyrics for this song"]
@@ -118,59 +118,72 @@ def get_current_lyrics(show_infos: bool):
 
         index = bisect.bisect_right(current_timestamps, pos) - 1
 
-        prev_line = current_lyrics[index - 1] if index > 0 else ""
+        prev_lines = []
+        for offset in range(line_count, 0, -1):
+            target_idx = index - offset
+            prev_lines.append(current_lyrics[target_idx] if 0 <= target_idx < len(current_lyrics) else "")
+
         curr_line = (
             current_lyrics[index]
             if 0 <= index < len(current_lyrics)
             else (f"{current_infos[0]} - {current_infos[1]}" if show_infos else "")
         )
-        next_line = current_lyrics[index + 1] if index + 1 < len(current_lyrics) else ""
 
-        return [prev_line, curr_line, next_line]
+        next_lines = []
+        for offset in range(1, line_count + 1):
+            target_idx = index + offset
+            next_lines.append(current_lyrics[target_idx] if 0 <= target_idx < len(current_lyrics) else "")
+
+        return [prev_lines, curr_line, next_lines]
     else:
         return ["No song is playing"]
 
 
-async def get_thing_to_display(show_infos: bool):
+async def get_thing_to_display(show_infos: bool, lines_count: int):
     await check_if_new_song()
-    return get_current_lyrics(show_infos)
+    return get_current_lyrics(show_infos, lines_count)
 
 
 class ParoleApp(App):
     CSS_PATH = "textual.tcss"
 
-    def __init__(self, delay_ms: float, show_infos: bool, ansi: bool):
+    def __init__(self, delay_ms: float, show_infos: bool, ansi: bool, line_count: int):
         super().__init__()
         self.delay_seconds = delay_ms / 1000.0
         self.show_infos = show_infos
         self.ansi_color = ansi
+        self.line_count = line_count
 
     def compose(self) -> ComposeResult:
-        yield Label(" ", id="before-label")
+        if self.line_count > 0:
+            for i in range(0, self.line_count):
+                yield Label(" ", id=f"before-label-{i}", classes="secundary-label before-label")
         yield Label("Loading...", id="main-label")
-        yield Label(" ", id="after-label")
+        if self.line_count > 0:
+            for i in range(0, self.line_count):
+                yield Label(" ", id=f"after-label-{i}", classes="secundary-label after-label")
 
     def on_mount(self) -> ComposeResult:
         self.set_interval(self.delay_seconds, self.update_label)
 
     async def update_label(self) -> None:
         main_label = self.query_one("#main-label", Label)
-        before_label = self.query_one("#before-label", Label)
-        after_label = self.query_one("#after-label", Label)
+        before_labels = self.query(".before-label")
+        after_labels = self.query(".after-label")
 
-        lyrics = await get_thing_to_display(self.show_infos)
+        before_lines, current_line, after_lines = await get_thing_to_display(self.show_infos, self.line_count)
 
-        if len(lyrics) == 1:
-            main_label.update(lyrics[0])
-            before_label.display = False
-            after_label.display = False
-        else:
-            before_label.display = True
-            after_label.display = True
+        has_lyrics = len(before_lines) > 0 and len(after_lines) > 0
 
-            before_label.update(lyrics[0])
-            main_label.update(lyrics[1])
-            after_label.update(lyrics[2])
+        main_label.update(current_line)
+
+        for label, text in zip(before_labels, before_lines):
+            label.display = has_lyrics
+            label.update(text)
+
+        for label, text in zip(after_labels, after_lines):
+            label.display = has_lyrics
+            label.update(text)
 
 
 if __name__ == "__main__":
@@ -197,7 +210,13 @@ if __name__ == "__main__":
         default=True,
         help="Don't use terminal colors",
     )
+    parser.add_argument(
+        "--line-count",
+        dest="line_count",
+        default=1,
+        help="Number of lyrics shown before and after the current one"
+    )
 
     args = parser.parse_args()
-    app = ParoleApp(delay_ms=args.delay, show_infos=args.show_infos, ansi=args.ansi)
+    app = ParoleApp(delay_ms=args.delay, show_infos=args.show_infos, ansi=args.ansi, line_count=args.line_count)
     app.run()

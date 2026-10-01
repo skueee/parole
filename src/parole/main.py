@@ -176,20 +176,26 @@ class ParoleApp(App):
             before_lines, current_line, after_lines = lyrics
         except ValueError:
             current_line = lyrics[0]
-            before_lines = ""
-            after_lines = ""
-
-        has_lyrics = len(before_lines) > 0 and len(after_lines) > 0
+            before_lines = []
+            after_lines = []
 
         main_label.update(current_line)
 
         for label, text in zip(before_labels, before_lines):
-            label.display = has_lyrics
+            label.display = True
             label.update(text)
 
         for label, text in zip(after_labels, after_lines):
-            label.display = has_lyrics
+            label.display = True
             label.update(text)
+
+        if len(before_lines) == 0:
+            for label in before_labels:
+                label.display = False
+
+        if len(after_lines) == 0:
+            for label in after_labels:
+                label.display = False
 
 
 if __name__ == "__main__":

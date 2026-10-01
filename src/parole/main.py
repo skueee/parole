@@ -220,6 +220,7 @@ if __name__ == "__main__":
         "--line-count",
         dest="line_count",
         default=1,
+        type=int,
         help="Number of lyrics shown before and after the current one"
     )
 

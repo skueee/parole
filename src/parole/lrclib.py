@@ -32,3 +32,7 @@ async def get_lyrics(artist: str, title: str, album: str | None = None):
 
     response = await get(endpoint + "/api/get", params=parameters)
     return response.json()
+
+if __name__=="__main__":
+    lyrics = asyncio.run(get_lyrics("The Police", "Every Breath You Take", "Synchronicity (Remastered 2003)"))
+    print(lyrics["syncedLyrics"])

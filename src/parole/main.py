@@ -171,7 +171,13 @@ class ParoleApp(App):
         before_labels = self.query(".before-label")
         after_labels = self.query(".after-label")
 
-        before_lines, current_line, after_lines = await get_thing_to_display(self.show_infos, self.line_count)
+        lyrics = await get_thing_to_display(self.show_infos, self.line_count)
+        try:
+            before_lines, current_line, after_lines = lyrics
+        except ValueError:
+            current_line = lyrics[0]
+            before_lines = ""
+            after_lines = ""
 
         has_lyrics = len(before_lines) > 0 and len(after_lines) > 0
 

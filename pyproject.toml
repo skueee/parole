@@ -32,5 +32,6 @@ build-backend = "uv_build"
 dev = [
     "deptry>=0.25.1",
     "ruff>=0.16.8",
+    "textual-dev>=1.8.0",
     "uv-script>=0.1.9",
 ]

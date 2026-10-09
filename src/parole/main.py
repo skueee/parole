@@ -6,6 +6,7 @@ import subprocess
 from array import array
 
 import lrclib
+import monitor
 from textual.app import App, ComposeResult
 from textual.widgets import Label
 
@@ -24,41 +25,21 @@ async def get_lyrics(title, artist, album: str | None = None):
         return None
 
 
-def get_metadata():
-    run = (
-        subprocess.run(
-            ["playerctl", "status"], capture_output=True, text=True, check=False
-        ).returncode
-        == 0
-    )
-    if run:
-        artist = subprocess.run(
-            ["playerctl", "metadata", "artist"],
-            capture_output=True,
-            text=True,
-            check=False,
-        ).stdout.strip()
-        title = subprocess.run(
-            ["playerctl", "metadata", "title"],
-            capture_output=True,
-            text=True,
-            check=False,
-        ).stdout.strip()
-        album = subprocess.run(
-            ["playerctl", "metadata", "album"],
-            capture_output=True,
-            text=True,
-            check=False,
-        ).stdout.strip()
-        return [run, artist, title, album]
+async def get_metadata():
+    provider = monitor.get_provider()
+    await provider.init()
+    metadata = await provider.get_metadata()
+    if metadata.artist == None and metadata.title == None and metadata.album == None:
+        run = False
     else:
-        return [run, None, None, None]
+        run = True
+    return [run, metadata.artist, metadata.title, metadata.album]
 
 
 async def check_if_new_song():
     global trackid, active, current_lyrics, current_timestamps, current_infos
     trackid = None if not isinstance(trackid, str) else trackid
-    metadata = get_metadata()
+    metadata = await get_metadata()
     if trackid == None or trackid != f"{metadata[1]}__{metadata[2]}":
         if metadata[0] == True:
             trackid = f"{metadata[1]}__{metadata[2]}"

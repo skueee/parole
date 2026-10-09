@@ -1,5 +1,4 @@
 import abc
-import asyncio
 import sys
 from dataclasses import dataclass
 
@@ -31,13 +30,20 @@ class TrackMetadata:
 
 class BaseMediaProvider(abc.ABC):
     @abc.abstractmethod
-    async def get_metadata(self) -> TrackMetadata:
+    async def init(self):
+        """Initialize the provider"""
+
+    async def get_metadata(self) -> TrackMetadata | None:
         """Fetch current song details."""
 
 
 class LinuxMediaProvider(BaseMediaProvider):
     def __init__(self):
         self.bus = None
+
+    async def init(self):
+        if not self.bus:
+            return await self.connect()
 
     async def connect(self):
         if not MessageBus:
@@ -46,7 +52,7 @@ class LinuxMediaProvider(BaseMediaProvider):
             # Connect to the Linux Session D-Bus
             self.bus = await MessageBus().connect()
             return True
-        except Exception: #noqa: BLE001
+        except Exception:  # noqa: BLE001
             raise NoMPRISException
 
     async def get_active_player_name(self) -> str | None:
@@ -71,7 +77,7 @@ class LinuxMediaProvider(BaseMediaProvider):
     async def get_metadata(self) -> TrackMetadata:
         player_name = await self.get_active_player_name()
         if not player_name:
-            return TrackMetadata(is_playing=False)
+            return TrackMetadata(active=False)
 
         introspection = await self.bus.introspect(
             player_name, "/org/mpris/MediaPlayer2"
@@ -94,7 +100,11 @@ class LinuxMediaProvider(BaseMediaProvider):
 
         title = title_var.value if title_var else None
         album = album_var.value if album_var else None
-        artist = artist_var.value[0] if artist_var else None
+        artist = None
+        try:
+            artist = artist_var.value[0]
+        except AttributeError:
+            artist = artist_var[0]
 
         return TrackMetadata(
             active=True,
@@ -102,3 +112,21 @@ class LinuxMediaProvider(BaseMediaProvider):
             album=album,
             artist=artist,
         )
+
+
+class PlatformNotSupportedError(Exception):
+    def __init__(self, platform: str) -> None:
+        super().__init__(f"Platform not supported: {platform}")
+
+
+_cached_provider: BaseMediaProvider | None = None
+
+
+def get_provider() -> BaseMediaProvider:
+    global _cached_provider
+    if _cached_provider is None:
+        if sys.platform == "linux":
+            _cached_provider = LinuxMediaProvider()
+        else:
+            raise PlatformNotSupportedError(sys.platform)
+    return _cached_provider

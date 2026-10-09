@@ -4,10 +4,10 @@ import random
 import re
 from array import array
 
-import lrclib
-import monitor
 from textual.app import App, ComposeResult
 from textual.widgets import Label
+
+from . import lrclib, monitor
 
 current_lyrics: array[str] | None
 current_timestamps: array[float] | None
@@ -190,7 +190,7 @@ class ParoleApp(App):
                 label.display = False
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="Parole is a TUI tool to display lyrics from the song you are currently playing"
     )
@@ -230,3 +230,7 @@ if __name__ == "__main__":
         line_count=args.line_count,
     )
     app.run()
+
+
+if __name__ == "__main__":
+    main()

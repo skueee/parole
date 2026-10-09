@@ -74,5 +74,5 @@ jobs:
         run: |
           gh release create "${{ inputs.version }}" dist/* \
             --title "${{ inputs.version }}" \
-            --notes "${{ inputs.release_notes }}"
+            --notes "${{ inputs.release_notes }}" \
             --generate-notes

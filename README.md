@@ -8,7 +8,7 @@ Parole is a TUI tool to display lyrics from the song you are currently playing !
 > [!NOTE]
 > While this tool is meant to be compatible with Windows, it could be more unstable due to less testing.
 
-[![asciicast](https://asciinema.org/a/supqZ4G4p0sTBINx.svg)](https://asciinema.org/a/supqZ4G4p0sTBINx)
+[![asciicast](https://asciinema.org/a/1267969.png)](https://asciinema.org/a/1267969)
 
 ## Quick start
 **1. Dependencies**

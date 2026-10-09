@@ -50,6 +50,15 @@ You can see infos on how to contribute and develop on the CONTRIBUTING.md file
 ## How does that works ?
 The program takes the current song using two ways, depending on the OS. If it runs on Linux, it will create a LinuxMediaProvider which uses MPRIS (through dbus-next) to get infos, while on Windows it uses a WindowsMediaProvider that uses winsdk to get infos. If the song changed, it sends a request to LRCLib to get the lyrics and display them !
 
+## Stardance
+This tool was made for Stardance, a program ran by [Hack Club](https://hackclub.com/)
+
+[My project page](https://stardance.hackclub.com/projects/63249) | [Hack Club](https://hackclub.com/) | [Stardance Program](https://stardance.hackclub.com/)
+
+## AI Notice
+
+AI was used to do research in this project, but the code was always rewritten and edited by an human. 
+
 ## Credit
 
 ### Libraries

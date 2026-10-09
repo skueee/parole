@@ -40,6 +40,9 @@ class BaseMediaProvider(abc.ABC):
     async def get_metadata(self) -> TrackMetadata | None:
         """Fetch current song details."""
 
+    async def get_position(self) -> float | None:
+        """Get current position"""
+
 
 class LinuxMediaProvider(BaseMediaProvider):
     def __init__(self):
@@ -117,6 +120,9 @@ class LinuxMediaProvider(BaseMediaProvider):
             artist=artist,
         )
 
+    async def get_position(self) -> float | None:
+        pass
+
 
 class WindowsMediaProvider(BaseMediaProvider):
     def __init__(self):
@@ -138,6 +144,9 @@ class WindowsMediaProvider(BaseMediaProvider):
             album=info.album_title,
             artist=info.artist,
         )
+
+    async def get_position(self) -> float | None:
+        pass
 
 
 class PlatformNotSupportedError(Exception):

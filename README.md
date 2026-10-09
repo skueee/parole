@@ -5,6 +5,10 @@ Parole is a TUI tool to display lyrics from the song you are currently playing !
 ![GitHub Issues](https://img.shields.io/github/issues/skueee/parole)
 ![GitHub Repo stars](https://img.shields.io/github/stars/skueee/parole?style=flat&color=yellow)
 
+> [!NOTE]
+> While this tool is meant to be compatible with Windows, it could be more unstable due to less testing.
+
+[![asciicast](https://asciinema.org/a/supqZ4G4p0sTBINx.svg)](https://asciinema.org/a/supqZ4G4p0sTBINx)
 
 ## Quick start
 **1. Dependencies**

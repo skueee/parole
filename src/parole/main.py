@@ -2,7 +2,6 @@ import argparse
 import bisect
 import random
 import re
-import subprocess
 from array import array
 
 import lrclib
@@ -34,6 +33,13 @@ async def get_metadata():
     else:
         run = True
     return [run, metadata.artist, metadata.title, metadata.album]
+
+
+async def get_position():
+    provider = monitor.get_provider()
+    await provider.init()
+    position = await provider.get_position()
+    return position
 
 
 async def check_if_new_song():
@@ -84,18 +90,11 @@ async def check_if_new_song():
             active = False
 
 
-def get_current_lyrics(show_infos: bool, line_count: int):
+async def get_current_lyrics(show_infos: bool, line_count: int):
     if active:
         if current_lyrics == None:
             return ["Can't find lyrics for this song"]
-        pos = float(
-            subprocess.run(
-                ["playerctl", "position"],
-                capture_output=True,
-                text=True,
-                check=False,
-            ).stdout.strip()
-        )
+        pos = float(await get_position())
 
         index = bisect.bisect_right(current_timestamps, pos) - 1
 
@@ -130,7 +129,7 @@ def get_current_lyrics(show_infos: bool, line_count: int):
 
 async def get_thing_to_display(show_infos: bool, lines_count: int):
     await check_if_new_song()
-    return get_current_lyrics(show_infos, lines_count)
+    return await get_current_lyrics(show_infos, lines_count)
 
 
 class ParoleApp(App):

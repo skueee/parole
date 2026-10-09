@@ -3,9 +3,11 @@ name = "parole-tui"
 version = "1.0.0"
 description = "Parole is a TUI tool to display lyrics from the song you are currently playing !"
 readme = "README.md"
+license = "GPL-3.0-only"
 authors = [
     { name = "skueee", email = "skueee@outlook.com" }
 ]
+keywords = ["lyrics", "music", "tui", "lrclib"]
 requires-python = ">=3.14"
 dependencies = [
     "dbus-next>=0.2.3 ; sys_platform == 'linux'",
@@ -13,6 +15,10 @@ dependencies = [
     "textual>=8.2.8",
     "winsdk>=1.0.0b10 ; sys_platform == 'win32'",
 ]
+
+[project.urls]
+Repository = "https://github.com/skueee/parole.git"
+Issues = "https://github.com/skueee/parole/issues"
 
 [project.scripts]
 parole = "parole:main"

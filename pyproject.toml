@@ -1,6 +1,6 @@
 [project]
 name = "parole-tui"
-version = "1.0.0"
+version = "1.0.1"
 description = "Parole is a TUI tool to display lyrics from the song you are currently playing !"
 readme = "README.md"
 license = "GPL-3.0-only"
@@ -21,7 +21,7 @@ Repository = "https://github.com/skueee/parole.git"
 Issues = "https://github.com/skueee/parole/issues"
 
 [project.scripts]
-parole = "parole:main"
+parole = "parole_tui:main"
 
 [tool.uvs.scripts]
 format = "uv run ruff format"
@@ -41,3 +41,6 @@ dev = [
     "textual-dev>=1.8.0",
     "uv-script>=0.1.9",
 ]
+
+[tool.uv.build]
+packages = ["src/parole_tui"]

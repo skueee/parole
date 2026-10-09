@@ -121,7 +121,23 @@ class LinuxMediaProvider(BaseMediaProvider):
         )
 
     async def get_position(self) -> float | None:
-        pass
+        player_name = await self.get_active_player_name()
+        if not player_name:
+            return None
+
+        introspection = await self.bus.introspect(
+            player_name, "/org/mpris/MediaPlayer2"
+        )
+        obj = self.bus.get_proxy_object(
+            player_name, "/org/mpris/MediaPlayer2", introspection
+        )
+        props = obj.get_interface("org.freedesktop.DBus.Properties")
+        position_variant = await props.call_get(
+            "org.mpris.MediaPlayer2.Player", "Position"
+        )
+
+        position = getattr(position_variant, "value", position_variant)
+        return position / 1_000_000.0
 
 
 class WindowsMediaProvider(BaseMediaProvider):

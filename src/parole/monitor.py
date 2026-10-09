@@ -149,7 +149,14 @@ class WindowsMediaProvider(BaseMediaProvider):
         self.manager = None
 
     async def init(self):
-        self.manager = await MediaManager.request_async()
+        if not self.manager:
+            await self.connect()
+
+    async def connect(self):
+        try:
+            self.manager = await MediaManager.request_async()
+        except OSError:
+            self.manager = None
 
     async def get_metadata(self) -> TrackMetadata | None:
         session = self.manager.get_current_session()

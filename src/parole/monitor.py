@@ -102,12 +102,3 @@ class LinuxMediaProvider(BaseMediaProvider):
             album=album,
             artist=artist,
         )
-
-
-async def test():
-    player = LinuxMediaProvider()
-    await player.connect()
-    print(await player.get_metadata())
-
-
-asyncio.run(test())

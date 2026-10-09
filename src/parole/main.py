@@ -121,7 +121,11 @@ def get_current_lyrics(show_infos: bool, line_count: int):
         prev_lines = []
         for offset in range(line_count, 0, -1):
             target_idx = index - offset
-            prev_lines.append(current_lyrics[target_idx] if 0 <= target_idx < len(current_lyrics) else "")
+            prev_lines.append(
+                current_lyrics[target_idx]
+                if 0 <= target_idx < len(current_lyrics)
+                else ""
+            )
 
         curr_line = (
             current_lyrics[index]
@@ -132,7 +136,11 @@ def get_current_lyrics(show_infos: bool, line_count: int):
         next_lines = []
         for offset in range(1, line_count + 1):
             target_idx = index + offset
-            next_lines.append(current_lyrics[target_idx] if 0 <= target_idx < len(current_lyrics) else "")
+            next_lines.append(
+                current_lyrics[target_idx]
+                if 0 <= target_idx < len(current_lyrics)
+                else ""
+            )
 
         return [prev_lines, curr_line, next_lines]
     else:
@@ -156,12 +164,16 @@ class ParoleApp(App):
 
     def compose(self) -> ComposeResult:
         if self.line_count > 0:
-            for i in range(0, self.line_count):
-                yield Label(" ", id=f"before-label-{i}", classes="secundary-label before-label")
+            for i in range(self.line_count):
+                yield Label(
+                    " ", id=f"before-label-{i}", classes="secundary-label before-label"
+                )
         yield Label("Loading...", id="main-label")
         if self.line_count > 0:
-            for i in range(0, self.line_count):
-                yield Label(" ", id=f"after-label-{i}", classes="secundary-label after-label")
+            for i in range(self.line_count):
+                yield Label(
+                    " ", id=f"after-label-{i}", classes="secundary-label after-label"
+                )
 
     def on_mount(self) -> ComposeResult:
         self.set_interval(self.delay_seconds, self.update_label)
@@ -227,9 +239,14 @@ if __name__ == "__main__":
         dest="line_count",
         default=1,
         type=int,
-        help="Number of lyrics shown before and after the current one"
+        help="Number of lyrics shown before and after the current one",
     )
 
     args = parser.parse_args()
-    app = ParoleApp(delay_ms=args.delay, show_infos=args.show_infos, ansi=args.ansi, line_count=args.line_count)
+    app = ParoleApp(
+        delay_ms=args.delay,
+        show_infos=args.show_infos,
+        ansi=args.ansi,
+        line_count=args.line_count,
+    )
     app.run()

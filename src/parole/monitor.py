@@ -4,6 +4,10 @@ from dataclasses import dataclass
 
 if sys.platform == "linux":
     from dbus_next.aio import MessageBus
+elif sys.platform == "win32":
+    from winsdk.windows.media.control import (
+        GlobalSystemMediaTransportControlsSessionManager as MediaManager,
+    )
 else:
     MessageBus = None
 
@@ -114,6 +118,28 @@ class LinuxMediaProvider(BaseMediaProvider):
         )
 
 
+class WindowsMediaProvider(BaseMediaProvider):
+    def __init__(self):
+        self.manager = None
+
+    async def init(self):
+        self.manager = await MediaManager.request_async()
+
+    async def get_metadata(self) -> TrackMetadata | None:
+        session = self.manager.get_current_session()
+        if not session:
+            return TrackMetadata(active=False)
+
+        info = await session.try_get_media_properties_async()
+
+        return TrackMetadata(
+            active=True,
+            title=info.title,
+            album=info.album_title,
+            artist=info.artist,
+        )
+
+
 class PlatformNotSupportedError(Exception):
     def __init__(self, platform: str) -> None:
         super().__init__(f"Platform not supported: {platform}")
@@ -127,6 +153,8 @@ def get_provider() -> BaseMediaProvider:
     if _cached_provider is None:
         if sys.platform == "linux":
             _cached_provider = LinuxMediaProvider()
+        elif sys.platform == "win32":
+            _cached_provider = WindowsMediaProvider()
         else:
             raise PlatformNotSupportedError(sys.platform)
     return _cached_provider

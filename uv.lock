@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.14"
 
 [[package]]
@@ -184,6 +184,7 @@ dependencies = [
     { name = "dbus-next", marker = "sys_platform == 'linux'" },
     { name = "httpx" },
     { name = "textual" },
+    { name = "winsdk", marker = "sys_platform == 'win32'" },
 ]
 
 [package.dev-dependencies]
@@ -198,6 +199,7 @@ requires-dist = [
     { name = "dbus-next", marker = "sys_platform == 'linux'", specifier = ">=0.2.3" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "textual", specifier = ">=8.2.8" },
+    { name = "winsdk", marker = "sys_platform == 'win32'", specifier = ">=1.0.0b10" },
 ]
 
 [package.metadata.requires-dev]
@@ -336,3 +338,9 @@ sdist = { url = "https://files.pythonhosted.org/packages/b7/32/4dbefcb9bb6197b58
 wheels = [
     { url = "https://files.pythonhosted.org/packages/82/ba/10dc44db65ce99720c908c0c6c4cca52d8f2f222b67ca91db5d5ccb38062/uv_script-0.1.9-py3-none-any.whl", hash = "sha256:aea2f419f605617e27c6a3b5ce198c043231f79fdc770cdd0feb58258dd2c456", size = 7710, upload-time = "2026-02-12T22:21:40.802Z" },
 ]
+
+[[package]]
+name = "winsdk"
+version = "1.0.0b10"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/01/005772332e79947013aa33c7cb20431e3efd6ac46eb54aed3472c14afe50/winsdk-1.0.0b10.tar.gz", hash = "sha256:8f39ea759626797449371f857c9085b84bb9f3b6d493dc6525e2cedcb3d15ea2", size = 7061492, upload-time = "2023-08-11T19:47:58.008Z" }

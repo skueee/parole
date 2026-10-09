@@ -1,12 +1,17 @@
 import abc
+import asyncio
 import sys
 from dataclasses import dataclass
+from datetime import UTC, datetime
 
 if sys.platform == "linux":
     from dbus_next.aio import MessageBus
 elif sys.platform == "win32":
     from winsdk.windows.media.control import (
         GlobalSystemMediaTransportControlsSessionManager as MediaManager,
+    )
+    from winsdk.windows.media.control import (
+        GlobalSystemMediaTransportControlsSessionPlaybackStatus as PlaybackStatus,
     )
 else:
     MessageBus = None
@@ -162,7 +167,29 @@ class WindowsMediaProvider(BaseMediaProvider):
         )
 
     async def get_position(self) -> float | None:
-        pass
+        session = self.manager.get_current_session()
+        if not session:
+            return None
+
+        timeline = session.get_timeline_properties()
+        playback_info = session.get_playback_info()
+
+        base_position = timeline.position.total_seconds()
+
+        if playback_info.playback_status != PlaybackStatus.PLAYING:
+            return base_position
+
+        last_updated = timeline.last_updated_time
+        now = datetime.now(UTC)
+        elapsed = (now - last_updated).total_seconds()
+
+        rate = getattr(playback_info, "playback_rate", None)
+        if rate is None:
+            rate = 1.0
+        current_position = base_position + (elapsed * rate)
+
+        end_time = timeline.end_time.total_seconds()
+        return min(current_position, end_time)
 
 
 class PlatformNotSupportedError(Exception):
@@ -183,3 +210,12 @@ def get_provider() -> BaseMediaProvider:
         else:
             raise PlatformNotSupportedError(sys.platform)
     return _cached_provider
+
+
+async def test():
+    provider = get_provider()
+    await provider.init()
+    print(await provider.get_position())
+
+
+asyncio.run(test())

@@ -163,7 +163,10 @@ class WindowsMediaProvider(BaseMediaProvider):
         if not session:
             return TrackMetadata(active=False)
 
-        info = await session.try_get_media_properties_async()
+        try:
+            info = await session.try_get_media_properties_async()
+        except PermissionError:
+            return TrackMetadata(active=False)
 
         return TrackMetadata(
             active=True,

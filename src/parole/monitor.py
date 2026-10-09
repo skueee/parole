@@ -1,5 +1,4 @@
 import abc
-import asyncio
 import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -210,12 +209,3 @@ def get_provider() -> BaseMediaProvider:
         else:
             raise PlatformNotSupportedError(sys.platform)
     return _cached_provider
-
-
-async def test():
-    provider = get_provider()
-    await provider.init()
-    print(await provider.get_position())
-
-
-asyncio.run(test())

@@ -10,6 +10,8 @@ Parole is a TUI tool to display lyrics from the song you are currently playing !
 
 [![asciicast](https://asciinema.org/a/1267969.png)](https://asciinema.org/a/1267969)
 
+#### [Download here !](https://pypi.org/project/parole-tui/)
+
 ## Quick start
 **1. Dependencies**
 
@@ -17,11 +19,11 @@ You will need pipx or pip to run this program
 
 **2. Download the program**
 ```
-pipx install parole-lyrics
+pipx install parole-tui
 ```
 or if you don't have pipx
 ```
-pip install parole-lyrics
+pip install parole-tui
 ```
 **3. Launch the program**
 ```

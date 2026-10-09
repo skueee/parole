@@ -3,8 +3,9 @@ import bisect
 import random
 import re
 from array import array
+from typing import ClassVar
 
-from textual.app import App, ComposeResult
+from textual.app import App, Binding, ComposeResult
 from textual.widgets import Label
 
 from . import lrclib, monitor
@@ -133,6 +134,9 @@ async def get_thing_to_display(show_infos: bool, lines_count: int):
 
 
 class ParoleApp(App):
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("ctrl+c", "quit", "Quit", show=True, priority=True),
+    ]
     CSS_PATH = "textual.tcss"
 
     def __init__(self, delay_ms: float, show_infos: bool, ansi: bool, line_count: int):

@@ -17,6 +17,8 @@ Parole is a TUI tool to display lyrics from the song you are currently playing !
 
 You will need pipx or pip to run this program
 
+On Windows, you will need the [Visual Studio build tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+
 **2. Download the program**
 ```
 pipx install parole-tui

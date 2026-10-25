@@ -42,6 +42,26 @@ Here is a list of the arguments that it can take :
 --line-count LINE_COUNT   Number of lyrics shown before and after the current one
 ```
 
+## Troubleshoot
+
+### It just shows "No song is playing"
+
+Check if the media stream is detected.
+
+**On Linux**, install playerctl and run :
+```
+playerctl metadate
+```
+It should show the artist and song. If not, try another player or submit an issue if none works.
+
+**On Windows**, check the media center for any media stream.
+
+If it works, then submit an issue and I'll look at what's going on.
+
+### No lyrics is found
+
+Your song does not have lyrics on LRCLib, sorry
+
 ## Features
 - Show lyrics in terminal
 - Multiplatform - Uses MPRIS or winsdk depending on your OS

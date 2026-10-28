@@ -19,8 +19,12 @@ else:
 class NoMPRISException(Exception):
     def __init__(self):
         super().__init__(
-            "MPRIS was not found on your system\nIf you are not on Linux, this error is intended"
+            "MPRIS was not found on your system\nIf you are not on Linux, this error should not be displaying.\nIf you are on Linux, check if playerctl works."
         )
+
+class NoWinSDKException(Exception):
+    def __init__(self) -> None:
+        super().__init__("Windows SDK was not found or does not work correctly on your device.\nIf you are not on Windows, this error should not be displaying.\nIf you are on Windows, this should not display too but it's worse.")
 
 
 class MPRISNotConnectedException(Exception):
@@ -159,6 +163,9 @@ class WindowsMediaProvider(BaseMediaProvider):
             self.manager = None
 
     async def get_metadata(self) -> TrackMetadata | None:
+        if not self.manager:
+            raise NoWinSDKException
+
         session = self.manager.get_current_session()
         if not session:
             return TrackMetadata(active=False)

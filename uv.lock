@@ -601,7 +601,7 @@ wheels = [
 
 [[package]]
 name = "parole-tui"
-version = "1.0.0"
+version = "1.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "dbus-next", marker = "sys_platform == 'linux'" },

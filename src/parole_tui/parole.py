@@ -2,7 +2,6 @@ import argparse
 import bisect
 import random
 import re
-from array import array
 from typing import ClassVar
 
 from textual.app import App, Binding, ComposeResult
@@ -10,11 +9,11 @@ from textual.widgets import Label
 
 from . import lrclib, monitor
 
-current_lyrics: array[str] | None
-current_timestamps: array[float] | None
-current_infos: array | None
+current_lyrics: list[str] | None = None
+current_timestamps: list[float] | None = None
+current_infos: list | None = None
 trackid: str | None = None
-active: bool
+active: bool = False
 
 
 async def get_lyrics(title, artist, album: str | None = None):
@@ -64,11 +63,10 @@ async def check_if_new_song():
                         break
 
                     # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
-                    seconds = (
-                        int(match.group(1)) * 60
-                        + int(match.group(2))
-                        + int(match.group(3) or 0) / 100
-                    )
+                    frac = match.group(3) or "0"
+                    divisor = 1000 if len(frac) == 3 else 100
+                    seconds = int(match.group(1)) * 60 + int(match.group(2)) + int(frac) / divisor
+
                     current_timestamps.append(seconds)
 
                     # Check if the lyric is not empty and then append it
@@ -77,7 +75,7 @@ async def check_if_new_song():
                         lyric = random.choice(["♫", "♪"])
 
                     current_lyrics.append(lyric)
-            except AttributeError, TypeError:
+            except (AttributeError, TypeError):
                 current_lyrics = None
 
             active = True

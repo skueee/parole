@@ -1,6 +1,6 @@
 import asyncio
-from random import randint
 import time
+from random import randint
 
 import httpx
 
@@ -13,10 +13,16 @@ async def get(url: str, params: httpx.ParamsType = None) -> httpx.Response:
 
     if int(time.time()) < rate_limit_timeout:
         time_to_wait = rate_limit_timeout - int(time.time())
-        await asyncio.sleep(time_to_wait + randint(0,int(0.3*time_to_wait))) # Add also a small delay because of best practices
+        await asyncio.sleep(
+            time_to_wait + randint(0, int(0.3 * time_to_wait))
+        )  # Add also a small delay because of best practices
 
     async with httpx.AsyncClient() as client:
-        r = await client.get(url, params=params, headers={"Lrclib-App-id":"MwWbctw3jSFNsXRBSyKXQTPERY6Ads722FktkXxoeiY"})
+        r = await client.get(
+            url,
+            params=params,
+            headers={"Lrclib-App-id": "MwWbctw3jSFNsXRBSyKXQTPERY6Ads722FktkXxoeiY"},
+        )
 
     # Handle rate limit
     if r.status_code == 429:

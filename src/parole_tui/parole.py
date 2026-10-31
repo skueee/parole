@@ -14,9 +14,11 @@ current_timestamps: list[float] | None = None
 current_infos: list | None = None
 trackid: str | None = None
 active: bool = False
+provider: str | None = None
 
 
 async def get_lyrics(title, artist, album: str | None = None):
+    global provider
     lyrics = await lrclib.get_lyrics(title=title, artist=artist, album=album)
     provider = "lrclib"
     if lyrics == None:
@@ -87,6 +89,7 @@ async def check_if_new_song():
                         lyric = random.choice(["♫", "♪"])
 
                     current_lyrics.append(lyric)
+                current_lyrics.append(f'--- Lyrics provided by {provider} ---')
             except AttributeError, TypeError:
                 current_lyrics = None
 

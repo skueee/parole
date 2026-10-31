@@ -1,6 +1,6 @@
 [project]
 name = "parole-tui"
-version = "1.0.1"
+version = "1.1.0"
 description = "Parole is a TUI tool to display lyrics from the song you are currently playing !"
 readme = "README.md"
 license = "GPL-3.0-only"

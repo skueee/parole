@@ -2,3 +2,4 @@ Any idea ? Submit an issue, or send a message to @skueee if you are on Hack Club
 
 - [ ] Rewrite with pylrc
 - [ ] Use maintained dbus
+- [ ] Add an argument to choose the player

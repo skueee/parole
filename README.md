@@ -60,19 +60,20 @@ If it works, then submit an issue and I'll look at what's going on.
 
 ### No lyrics is found
 
-Your song does not have lyrics on LRCLib, sorry
+Your song does not have lyrics on LRCLib or lrc.red, sorry
 
 ## Features
 - Show lyrics in terminal
 - Multiplatform - Uses MPRIS or winsdk depending on your OS
 - Some customization options
 - Sync lyrics with music
+- Two source: LRCLib and lrc.red
 
 ## Development
 You can see infos on how to contribute and develop on the CONTRIBUTING.md file
 
 ## How does that works ?
-The program takes the current song using two ways, depending on the OS. If it runs on Linux, it will create a LinuxMediaProvider which uses MPRIS (through dbus-next) to get infos, while on Windows it uses a WindowsMediaProvider that uses winsdk to get infos. If the song changed, it sends a request to LRCLib to get the lyrics and display them !
+The program takes the current song using two ways, depending on the OS. If it runs on Linux, it will create a LinuxMediaProvider which uses MPRIS (through dbus-next) to get infos, while on Windows it uses a WindowsMediaProvider that uses winsdk to get infos. If the song changed, it sends a request to LRCLib to get the lyrics and display them ! If LRCLib does not have the song or is down, it asks lrc.red for the lyrics instead.
 
 ## Stardance
 This tool was made for Stardance, a program ran by [Hack Club](https://hackclub.com/)
@@ -92,6 +93,7 @@ AI was used to do research in this project, but the code was always rewritten an
 
 ### API
 - **LRCLib, to get the lyrics :** [lrclib.net](https://lrclib.net/)
+- **lrc.red, to also get the lyrics :** [lrc.red](https://lrc.red/)
 
 ### Project management
 - **UV, to manage the project :** [docs.astral.sh/uv](https://docs.astral.sh/uv/)

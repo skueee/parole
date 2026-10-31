@@ -58,14 +58,12 @@ async def check_if_new_song():
         if metadata[0] == True:
             trackid = f"{metadata[1]}__{metadata[2]}"
             lyrics = await get_lyrics(metadata[2], metadata[1])
-            print(lyrics)
             current_lyrics = []
             current_timestamps = []
 
             TIMESTAMP_REGEX = re.compile(r"\[(\d{1,2}):(\d{2})(?:\.(\d{2,3}))?\]")
             try:
                 for i in lyrics["lyrics"].splitlines():
-                    print(i)
                     match = TIMESTAMP_REGEX.search(i)
 
                     if not match:

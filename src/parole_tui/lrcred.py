@@ -90,7 +90,3 @@ async def get_lyrics(artist: str, title: str, album: str | None = None):
     result = clean_lrc(lrc)
 
     return {"syncedLyrics": result}
-
-
-if __name__ == "__main__":
-    print(asyncio.run(get_lyrics("System Of A Down", "Sugar")))

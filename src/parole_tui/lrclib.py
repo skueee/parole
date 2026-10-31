@@ -39,4 +39,7 @@ async def get_lyrics(artist: str, title: str, album: str | None = None):
         parameters = {"track_name": title, "artist_name": artist}
 
     response = await get(endpoint + "/api/get", params=parameters)
-    return response.json()
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None

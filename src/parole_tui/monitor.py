@@ -22,9 +22,12 @@ class NoMPRISException(Exception):
             "MPRIS was not found on your system\nIf you are not on Linux, this error should not be displaying.\nIf you are on Linux, check if playerctl works."
         )
 
+
 class NoWinSDKException(Exception):
     def __init__(self) -> None:
-        super().__init__("Windows SDK was not found or does not work correctly on your device.\nIf you are not on Windows, this error should not be displaying.\nIf you are on Windows, this should not display too but it's worse.")
+        super().__init__(
+            "Windows SDK was not found or does not work correctly on your device.\nIf you are not on Windows, this error should not be displaying.\nIf you are on Windows, this should not display too but it's worse."
+        )
 
 
 class MPRISNotConnectedException(Exception):

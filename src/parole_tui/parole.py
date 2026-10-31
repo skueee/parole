@@ -7,7 +7,7 @@ from typing import ClassVar
 from textual.app import App, Binding, ComposeResult
 from textual.widgets import Label
 
-from . import lrclib, monitor
+from . import lrclib, lrcred, monitor
 
 current_lyrics: list[str] | None = None
 current_timestamps: list[float] | None = None
@@ -18,8 +18,16 @@ active: bool = False
 
 async def get_lyrics(title, artist, album: str | None = None):
     lyrics = await lrclib.get_lyrics(title=title, artist=artist, album=album)
+    provider = "lrclib"
+    if lyrics == None:
+        lyrics = await lrcred.get_lyrics(title=title, artist=artist, album=album)
+        provider = "lrc.red"
+
+    if lyrics == None:
+        return None
+
     if "syncedLyrics" in lyrics:
-        return {"lyrics": lyrics["syncedLyrics"]}
+        return {"lyrics": lyrics["syncedLyrics"], "provider": provider}
     else:
         return None
 
@@ -50,12 +58,14 @@ async def check_if_new_song():
         if metadata[0] == True:
             trackid = f"{metadata[1]}__{metadata[2]}"
             lyrics = await get_lyrics(metadata[2], metadata[1])
+            print(lyrics)
             current_lyrics = []
             current_timestamps = []
 
             TIMESTAMP_REGEX = re.compile(r"\[(\d{1,2}):(\d{2})(?:\.(\d{2,3}))?\]")
             try:
                 for i in lyrics["lyrics"].splitlines():
+                    print(i)
                     match = TIMESTAMP_REGEX.search(i)
 
                     if not match:
@@ -65,7 +75,11 @@ async def check_if_new_song():
                     # Transform the timestamp into a position in seconds (because playerctl only outputs the position in seconds)
                     frac = match.group(3) or "0"
                     divisor = 1000 if len(frac) == 3 else 100
-                    seconds = int(match.group(1)) * 60 + int(match.group(2)) + int(frac) / divisor
+                    seconds = (
+                        int(match.group(1)) * 60
+                        + int(match.group(2))
+                        + int(frac) / divisor
+                    )
 
                     current_timestamps.append(seconds)
 
@@ -75,7 +89,7 @@ async def check_if_new_song():
                         lyric = random.choice(["♫", "♪"])
 
                     current_lyrics.append(lyric)
-            except (AttributeError, TypeError):
+            except AttributeError, TypeError:
                 current_lyrics = None
 
             active = True

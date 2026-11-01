@@ -92,7 +92,7 @@ AI was used to do research in this project, but the code was always rewritten an
 - **Textual, to display the TUI :** [textual.textualize.io](https://textual.textualize.io/)
 
 ### API
-- **LRCLib, to get the lyrics :** [lrclib.net](https://lrclib.net/)
+- **LRCLib, to get the lyrics :** [lrclib.net](https://lrclib.net/) | [API Authorization Document](https://lrclib.net/developers/authorizations/MwWbctw3jSFNsXRBSyKXQTPERY6Ads722FktkXxoeiY)
 - **lrc.red, to also get the lyrics :** [lrc.red](https://lrc.red/)
 
 ### Project management
